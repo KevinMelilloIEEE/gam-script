@@ -1,0 +1,74 @@
+#!/bin/bash
+INPUT=~/gam-data/userterm.csv
+OLDIFS=$IFS
+IFS=,
+timestamp=$(date +%Y-%m-%d@%I:%M%p)
+[ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }
+while read userEmail userFirst userLast managerEmail managerPhone
+do
+  domain=${userEmail/*@/ }
+  userId=${userEmail/@*/ }
+  userId="$(echo -e "${userId}" | sed -e 's/[[:space:]]*$//')"
+  domain="$(echo -e "${domain}" | sed -e 's/^[[:space:]]*//')"
+  domain="@$domain"
+  dateStamp=_departed_$(date +%Y%m%d)
+  newEmail=$userId$dateStamp$domain
+  if [ -z "$1" ]
+  then
+    echo -e "\e[91m\e[7mALERT:\e[0m To be used only for termination procedure"
+    echo -e "to process changes use \e[91m./termUser doit\e[0m"
+    echo -e "---[ \e[93m\e[1mPREVIEW of Changes \e[0m]--- "
+    echo -e "\e[1mUnsuspend:             \e[0m$userEmail"
+    echo -e "\e[1mRename to:             \e[0m$newEmail"
+    echo -e "\e[1mDelegate to:           \e[0m$managerEmail ($managerPhone)"
+    echo -e "\e[1mVacation Responder:    \e[0m"
+    echo -e "  $userFirst $userLast is no longer with IEEE, please contact $userFirst's manager at"
+    echo -e "  <$managerEmail> or by telephone at $managerPhone.  \n\n  Thank You.  \n  IEEE Support."
+    echo -e "\e[36mRemove from All Groups\e[0m"
+    echo -e "\e[36mRemove mobile devices\e[0m"
+    echo -e "\e[36mMove to ORG /EXEMPT/Departed Staff Hold Normal\e[0m"
+    echo -e "---[ \e[93m\e[1mPREVIEW END \e[0m]--"
+    echo
+  else
+    if [ "${1^^}" == "DOIT" ]
+    then 
+      echo -e "---[ \e[93m\e[1mTermination Process for User \e[36m$userFirst $userLast \e[0m]---\e[32m"
+      echo -e "\e[36m- Unsuspending User\e[0m"
+      echo "* $timestamp * $userEmail - Termination Process Start" >> ~/gam-data/gam-data.log
+      ~/bin/gam/gam update user $userEmail suspended off
+      echo "* $timestamp * $userEmail - unsuspended" >> ~/gam-data/gam-data.log
+      echo -e "\e[36m- Rename User\e[0m"
+      ~/bin/gam/gam update user $userEmail username $newEmail
+      echo "* $timestamp * $userEmail - renamed to $newEmail" >> ~/gam-data/gam-data.log
+      echo -e "\e[36m- Remove from All Groups\e[0m"
+      ~/bin/gam/gam user $newEmail delete groups
+      echo "* $timestamp * $newEmail - all groups removed" >> ~/gam-data/gam-data.log
+      echo -e "\e[36m- Move to Proper ORG\e[0m"
+      ~/bin/gam/gam update user $newEmail org "/EXEMPT/Departed Staff Hold Normal"
+      echo "* $timestamp * $newEmail - Moved to Departed Staff Hold Normal" >> ~/gam-data/gam-data.log
+      echo -e "\e[36m- Delegate access to Manager\e[0m"
+      ~/bin/gam/gam user $newEmail delegate to $managerEmail
+      echo "* $timestamp * $newEmail - Delegated email to $managerEmail" >> ~/gam-data/gam-data.log
+      echo -e "\e[36m- Set Vacation Message\e[0m"
+      ~/bin/gam/gam user $newEmail vacation on subject "$userFirst $userLast is no longer with the IEEE:" message "$userFirst $userLast is no longer with the IEEE, please contact $userFirst's manager by email at <$managerEmail> or by telephone at $managerPhone. \n\n Thank You, \n IEEE Support." startdate $(date +%Y-%m-%d) enddate 2099-12-30
+      echo "* $timestamp * $newEmail - Set vacation responder to $managerEmail ($managerPhone)" >> ~/gam-data/gam-data.log
+      echo -e "\e[36m- Randomize Password for $newEmail\e[0m"
+      ~/bin/gam/gam update user $newEmail password random
+      echo "* $timestamp * $newEmail - Password Randomized" >> ~/gam-data/gam-data.log
+      echo -e "\e[36m- Deprovision $newEmail\e[0m"
+      ~/bin/gam/gam user $newEmail deprovision
+      echo "* $timestamp * $newEmail - Revoked all App Passwords, 2 Factor, and OAuth tokens" >> ~/gam-data/gam-data.log
+      echo -e "\e[36m- Dump Mobile Phones\e[0m"
+      ~/bin/gam/gam print mobile query "email:$userEmail" >> ~/gam-data/tmp.mobile-data.csv
+      echo -e "\e[36m- Wipe Account from All Mobile Devices\e[0m"
+      ~/bin/gam/gam csv ~/gam-data/tmp.mobile-data.csv gam update mobile ~resourceId action account_wipe
+      rm ~/gam-data/tmp.mobile-data.csv
+      echo "* $timestamp * $newEmail - Mobile Devices Wiped" >> ~/gam-data/gam-data.log
+      echo "* $timestamp * $userEmail - Termination Process Complete" >> ~/gam-data/gam-data.log
+      echo -e "\e[0m---[ \e[93m\e[1m Termination Process Complete for \e[36m$userFirst $userLast \e[0m]---"
+      echo
+      echo "Please log into Admin Console and reset sign in cookies for $newEmail"
+    fi
+  fi
+done < $INPUT
+IFS=$OLDIFS

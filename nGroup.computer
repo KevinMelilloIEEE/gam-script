@@ -1,0 +1,53 @@
+#!/bin/bash
+INPUT=~/gam-data/grouplist.csv
+OLDIFS=$IFS
+IFS=,
+timestamp=$(date +%Y-%m-%d@%I:%M%p)
+[ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }
+while read groupManager groupName groupDesc
+do
+  groupSuffix="@computer.org"
+  aliasSuffix="@gapps.ieee.org"
+  tGroupName=$groupName$groupSuffix
+  tAlias=$groupName$aliasSuffix
+  if [ -z "$1" ]
+  then
+    echo -e "to process changes use \e[91mnGroup.ieee doit\e[0m"
+    echo -e "---[ \e[93m\e[1mPREVIEW of Changes \e[0m]--- "
+    echo -e "\e[1mGroup Name: \e[0m$tGroupName"
+    echo -e "\e[1mAlias:      \e[0m$tAlias"
+    echo -e "\e[1mManager:    \e[0m$groupManager"
+    echo -e "\e[36mSetting spam_moderation_level to allow\e[0m"
+    echo -e "\e[36mSetting who_can_leave_group to ALL_MANAGERS_CAN_LEAVE\e[0m"
+    echo -e "---[ \e[93m\e[1mPREVIEW END \e[0m]--"
+    echo
+  else
+    if [ "${1^^}" == "DOIT" ]
+    then
+      echo -e "---[ \e[93m\e[1mCreating Group \e[36m$tGroupName \e[0m]---\e[32m"
+      ~/bin/gam/gam create group $tGroupName name $groupName description $groupDesc
+      ~/bin/gam/gam create alias $tAlias group $tGroupName
+      ~/bin/gam/gam update group $tGroupName add manager user $groupManager
+      ~/bin/gam/gam update group $tGroupName spam_moderation_level allow
+      ~/bin/gam/gam update group $tGroupName who_can_leave_group ALL_MANAGERS_CAN_LEAVE
+      echo "* $timestamp * $tGroupname - created ($groupManager)" >> ~/gam-data/gam-data.log
+      echo -e "\e[0m---[ \e[93m\e[1m Creation Complete for \e[36m$tGroupName \e[0m]---"
+      echo
+      echo "Please respond to the request with the following:"
+      echo
+      echo "Google Group $groupName has been created and you have been assigned"
+      echo "as the manager with full access to add and remove members.  You can"
+      echo "access your new group by clicking on the grid (top right) and choosing"
+      echo "'Groups'.  Click 'My Groups' and choose the group name from the list"
+      echo "of groups.  Click on 'Manage' (upper right) to manage the member list."
+      echo "Choose 'Direct add members' (Left under Members) to add a subscriber."
+      echo "Enter the email address, then click add."
+      echo
+      echo "Also add the alias to cs-listserv"
+      echo "/usr/local/Mail/src/common-aliases"
+      echo
+    fi
+  fi
+    
+done < $INPUT
+IFS=$OLDIFS

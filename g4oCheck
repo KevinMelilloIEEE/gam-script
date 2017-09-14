@@ -1,0 +1,32 @@
+#!/bin/bash
+if [ -z "$1" ]
+then
+  echo -e "\e[91m\e[7mALERT:\e[0m Need to provide G4O Section Number"
+  echo -e "to check use \e[91m./g4oCheck r123456\e[0m"
+  echo
+else
+  g4oPrefix="g4o_"
+  g4oServiceSuffix="_svc@ieee.org"
+  g4oMemberSuffix="_mem@ieee.org"
+  g4oVolunteerSuffix="_vol@ieee.org"
+  g4oServiceAccount=$g4oPrefix$1$g4oServiceSuffix
+  g4oMemberGroup=$g4oPrefix$1$g4oMemberSuffix
+  g4oVolunteerGroup=$g4oPrefix$1$g4oVolunteerSuffix 
+  echo -e "---[ \e[93m\e[1mChecking g4o for \e[36m$g4oServiceAccount \e[0m]---\e[32m"
+  echo -e "   [ \e[93m\e[1mUser Information  \e[0m]---\e[32m"
+  ~/bin/gam/gam info user $g4oServiceAccount
+  echo
+  echo -e "   [ \e[93m\e[1mUser Member Group  \e[0m]---\e[32m"
+  ~/bin/gam/gam info group $g4oMemberGroup
+  echo -e "   [ \e[93m\e[1mUser Volunteer Group  \e[0m]---\e[32m"
+  ~/bin/gam/gam info group $g4oVolunteerGroup
+  echo -e "   [ \e[93m\e[1mDrive File ID Check\e[0m]---\e[32m"
+  ~/bin/gam/gam user $g4oServiceAccount show filelist id
+  ~/bin/gam/gam user $g4oServiceAccount show filelist id >> ~/gam-data/tmp.g4o-permissions.csv
+  echo -e "   [ \e[93m\e[1mDrive File Permissions\e[0m]---\e[32m"
+  ~/bin/gam/gam csv ~/gam-data/tmp.g4o-permissions.csv gam user ~Owner show drivefileacl ~id
+  echo -e "\e[0m---[ \e[93m\e[1m Check Complete for \e[36m$g4oServiceAccount \e[0m]---"
+  timestamp=$(date +%Y-%m-%d@%I:%M%p)
+  echo "* $timestamp * g4o Check completed on $g4oServiceAccount." >> ~/gam-data/gam-data.log
+
+fi

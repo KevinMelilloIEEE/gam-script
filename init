@@ -1,0 +1,49 @@
+#/bin/bash
+
+echo -e "# *** Begin additions from INIT ***" >> ~/.bashrc
+
+# Set up data files, and default information inside those files
+mkdir ~/gam-data
+touch ~/gam-data/grouplist.csv
+echo -e "manager_email,groupname_prefix,group_info_prefix" >> ~/gam-data/grouplist.csv
+touch ~/gam-data/userlist.csv
+echo -e "email_prefix,First_name,Last_name,OU,group_prefix" >> ~/gam-data/userlist.csv
+touch ~/gam-data/userterm.csv
+echo -e "email_address@domain.com,First_Name,Last_Name,manager_email@domain.com,123.456.7890" >> ~/gam-data/userterm.csv
+touch ~/gam-data/gam-data.log
+
+# Set up .bashrc for the following commands:
+
+# grouplist - edit the group list file to create groups
+echo -e " " >> ~/.bashrc
+echo -e "# type 'grouplist' to edit the group list file for additons" >> ~/.bashrc
+echo -e "grouplist () {" >> ~/.bashrc
+echo -e "  cd ~/gam-script" >> ~/.bashrc
+echo -e "  nano ~/gam-data/grouplist.csv" >> ~/.bashrc
+echo -e "}" >> ~/.bashrc
+echo -e " " >> ~/.bashrc
+
+# newuser - edit the new user file to on-board users
+echo -e " " >> ~/.bashrc
+echo -e "# type 'newuser' to edit the new user list for on-boarding" >> ~/.bashrc
+echo -e "newuser () {" >> ~/.bashrc
+echo -e "  cd ~/gam-script" >> ~/.bashrc
+echo -e "  nano ~/gam-data/userlist.csv" >> ~/.bashrc
+echo -e "}" >> ~/.bashrc
+echo -e " " >> ~/.bashrc
+
+# termuser - edit the term user file to off-board users
+echo -e " " >> ~/.bashrc
+echo -e "# type 'termuser' to edit the term user list for off-boarding" >> ~/.bashrc 
+echo -e "termuser () {" >> ~/.bashrc
+echo -e "  cd ~/gam-script" >> ~/.bashrc
+echo -e "  nano ~/gam-data/userterm.csv" >> ~/.bashrc
+echo -e "}" >> ~/.bashrc
+echo -e " " >> ~/.bashrc
+
+
+
+
+echo -e "# *** END additions from INIT ***" >> ~/.bashrc
+echo -e "\e[91m\e[7mALERT:\e[0m You must restart your shell for the commands to be active."
+echo -e "\e[91m\e[7mALERT:\e[0m Please review your ~/.bashrc file for the changes."
