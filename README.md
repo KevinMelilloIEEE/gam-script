@@ -18,3 +18,15 @@ termUser.* - process a user for termination from an input file
  sets the vacation message of the user
  revokes all keys, mobile devices, and oauth codes
  randomizes the password
+
+To download and use these scripts, or just to view them for reference:
+
+- Install Google Apps Manager: https://github.com/jay0lee/GAM/wiki
+- Once GAM is successfully installed and working, use the following
+  command to clone the script repository
+
+  git clone https://github.com/KevinMelilloIEEE/gam-script
+
+- change to the gam-script directory, usually ~/gam-script
+- run ./init to create the initial data directories, modify your 
+  ~/.bashrc file, and then restart your shell
