@@ -52,6 +52,8 @@ do
       echo -e "\e[36m- Set Vacation Message\e[0m"
       ~/bin/gam/gam user $newEmail vacation on subject "$userFirst $userLast is no longer with the IEEE:" message "$userFirst $userLast is no longer with the IEEE, please contact $userFirst's manager by email at <$managerEmail> or by telephone at $managerPhone. \n\n Thank You, \n IEEE Support." startdate $(date +%Y-%m-%d) enddate 2099-12-30
       echo "* $timestamp * $newEmail - Set vacation responder to $managerEmail ($managerPhone)" >> ~/gam-data/gam-data.log
+      ~/bin/gam/gam calendar $newEmail add editor $managerEmail
+      ~/bin/gam/gam user $managerEmail add calendar $newEmail selected true hidden false 
       echo -e "\e[36m- Randomize Password for $newEmail\e[0m"
       ~/bin/gam/gam update user $newEmail password random
       echo "* $timestamp * $newEmail - Password Randomized" >> ~/gam-data/gam-data.log

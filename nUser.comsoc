@@ -8,7 +8,7 @@ while read userName firstName lastName orgName groupName
 do
   orgPrefix="/STAFF"
   emailSuffix="@comsoc.org"
-  groupSuffix="_staff@ieee.org"
+  groupSuffix="_staff@comsoc.org"
   aliasSuffix="@gapps.ieee.org"
   tUser="$userName$emailSuffix"
   tOrg="/STAFF/$orgName"

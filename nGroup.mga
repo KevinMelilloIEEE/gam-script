@@ -25,9 +25,11 @@ do
     if [ "${1^^}" == "DOIT" ]
     then
       echo -e "---[ \e[93m\e[1mCreating Group \e[36m$tGroupName \e[0m]---\e[32m"
-      ~/bin/gam/gam create group $tGroupName name $groupName description $groupDesc
+      ~//bin/gam/gam create group $tGroupName name $groupName description $groupDesc
       ~/bin/gam/gam create alias $tAlias group $tGroupName
-      ~/bin/gam/gam update group $tGroupName add manager user $groupManager
+      ~/bin/gam/gam update group $tGroupName add manager user v.sharoff@ieee.org
+      ~/bin/gam/gam update group $tGroupName add manager user h.shiminsky@ieee.org
+      ~/bin/gam/gam update group $tGroupName add manager user k.n.luu@ieee.org
       ~/bin/gam/gam update group $tGroupName spam_moderation_level allow
       ~/bin/gam/gam update group $tGroupName who_can_leave_group ALL_MANAGERS_CAN_LEAVE
       echo "* $timestamp * $tGroupName - created ($groupManager)" >> ~/gam-data/gam-data.log
