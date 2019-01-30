@@ -30,7 +30,7 @@ do
       ~/bin/gam/gam update group $tGroupName add manager nomail user v.sharoff@ieee.org
       ~/bin/gam/gam update group $tGroupName add manager nomail user h.shiminsky@ieee.org
       ~/bin/gam/gam update group $tGroupName add manager nomail user k.n.luu@ieee.org
-      ~/bin/gam/gam update group $tGroupName spam_moderation_level allow
+      ~/bin/gam/gam update group $tGroupName spam_moderation_level allow allow_external_members true
       ~/bin/gam/gam update group $tGroupName who_can_leave_group ALL_MANAGERS_CAN_LEAVE
       echo "* $timestamp * $tGroupName - created ($groupManager)" >> ~/gam-data/gam-data.log
       echo -e "\e[0m---[ \e[93m\e[1m Creation Complete for \e[36m$tGroupName \e[0m]---"
