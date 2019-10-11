@@ -30,3 +30,7 @@ To download and use these scripts, or just to view them for reference:
 - change to the gam-script directory, usually ~/gam-script
 - run ./init to create the initial data directories, modify your 
   ~/.bashrc file, and then restart your shell
+
+To update your local version with changes that are in the MASTER REPOSITORY
+ 
+  git pull --rebase origin master
