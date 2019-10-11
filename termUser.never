@@ -7,16 +7,10 @@ timestamp=$(date +%Y-%m-%d@%I:%M%p)
 [ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }
 while read userEmail userFirst userLast managerEmail managerPhone
 do
-  #domain=${userEmail/*@/ }
-  #userId=${userEmail/@*/ }
-  #userId="$(echo -e "${userId}" | sed -e 's/[[:space:]]*$//')"
-  #domain="$(echo -e "${domain}" | sed -e 's/^[[:space:]]*//')"
-  #domain="@$domain"
   dateStamp=_departed_$(date +%Y%m%d)
   ~/bin/gam/gam info user $userEmail | grep "Path:" > $TEMP
   line="$(head -1 $TEMP)"
   line="${line#'Google Org Unit Path: '}"
-  #newEmail=$userId$dateStamp$domain
   if [ -z "$1" ]
   then
     echo -e "\e[91m\e[7mALERT:\e[0m To be used only for termination procedure"
@@ -29,7 +23,7 @@ do
     echo -e "  <$managerEmail> or by telephone at $managerPhone.  \n\n  Thank You.  \n  IEEE Support."
     echo -e "\e[36mRemove from All Groups\e[0m"
     echo -e "\e[36mRemove mobile devices\e[0m"
-    echo -e "\e[36mMove from $line to /EXEMPT/Departed Staff Hold Normal\e[0m"
+    echo -e "\e[36mMove from $line to /EXEMPT/Departed Staff Hold Indefinite\e[0m"
     echo -e "\e[36mSet Departed & Date $(date +%Y-%m-%d)"
     echo -e "---[ \e[93m\e[1mPREVIEW END \e[0m]--"
     echo
@@ -47,8 +41,8 @@ do
       ~/bin/gam/gam user $userEmail delete groups
       echo "* $timestamp * $userEmail - all groups removed" >> ~/gam-data/gam-data.log
       echo -e "\e[36m- Move to Proper ORG\e[0m"
-      ~/bin/gam/gam update user $userEmail org "/EXEMPT/Departed Staff Hold Normal"
-      echo "* $timestamp * $userEmail - Moved to Departed Staff Hold Normal" >> ~/gam-data/gam-data.log
+      ~/bin/gam/gam update user $userEmail org "/EXEMPT/Departed Staff Hold Indefinite"
+      echo "* $timestamp * $userEmail - Moved to Departed Staff Hold Indefinite" >> ~/gam-data/gam-data.log
       echo -e "\e[36m- Delegate access to Manager\e[0m"
       ~/bin/gam/gam user $userEmail delegate to $managerEmail
       echo "* $timestamp * $userEmail - Delegated email to $managerEmail" >> ~/gam-data/gam-data.log
