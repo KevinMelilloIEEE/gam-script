@@ -1,29 +1,33 @@
 #!/bin/bash
 INPUT=~/gam-data/userterm.csv
+TEMP=~/gam-data/orgname.csv
 OLDIFS=$IFS
 IFS=,
 timestamp=$(date +%Y-%m-%d@%I:%M%p)
 [ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }
 while read userEmail userFirst userLast managerEmail managerPhone
 do
-  domain=${userEmail/*@/ }
-  userId=${userEmail/@*/ }
-  userId="$(echo -e "${userId}" | sed -e 's/[[:space:]]*$//')"
-  domain="$(echo -e "${domain}" | sed -e 's/^[[:space:]]*//')"
-  domain="@$domain"
-  dateStamp=_onleave_$(date +%Y%m%d)
-  newEmail=$userId$dateStamp$domain
+  #domain=${userEmail/*@/ }
+  #userId=${userEmail/@*/ }
+  #userId="$(echo -e "${userId}" | sed -e 's/[[:space:]]*$//')"
+  #domain="$(echo -e "${domain}" | sed -e 's/^[[:space:]]*//')"
+  #domain="@$domain"
+  #dateStamp=_onleave_$(date +%Y%m%d)
+  #newEmail=$userId$dateStamp$domain
+  ~/bin/gam/gam info user $userEmail | grep "Path:" > $TEMP
+  line="$(head -1 $TEMP)"
+  line="${line#'Google Org Unit Path: '}"
   if [ -z "$1" ]
   then
     echo -e "\e[91m\e[7mALERT:\e[0m To be used only for on leave procedure"
     echo -e "to process changes use \e[91m./onLeave doit\e[0m"
     echo -e "---[ \e[93m\e[1mPREVIEW of Changes \e[0m]--- "
     echo -e "\e[1mUser on Leave:         \e[0m$userEmail"
-    echo -e "\e[1mRename to:             \e[0m$newEmail"
     echo -e "\e[1mDelegate to:           \e[0m$managerEmail ($managerPhone)"
     echo -e "\e[1mVacation Responder:    \e[0m"
     echo -e "  $userFirst $userLast is out of the office, please contact $userFirst's manager at"
     echo -e "  <$managerEmail> or by telephone at $managerPhone.  \n\n  Thank You.  \n  IEEE Support."
+    echo -e "\e[1mSet OnLeave and Date $(date +%Y-%m-%d)"
     echo -e "---[ \e[93m\e[1mPREVIEW END \e[0m]--"
     echo
   else
@@ -32,18 +36,17 @@ do
       echo -e "---[ \e[93m\e[1mOn Leave Process for User \e[36m$userFirst $userLast \e[0m]---\e[32m"
       echo "* $timestamp * $userEmail - On Leave Process Start" >> ~/gam-data/gam-data.log
       ~/bin/gam/gam update user $userEmail suspended off
-      echo -e "\e[36m- Rename User\e[0m"
-      ~/bin/gam/gam update user $userEmail username $newEmail
-      echo "* $timestamp * $userEmail - renamed to $newEmail" >> ~/gam-data/gam-data.log
+      ~/bin/gam/gam update user $userEmail Status.Status OnLeave Status.Date $(date +%Y-%m-%d) Status.OU $line 
+      echo "* $timestamp * $userEmail - Status set to OnLeave on $(date +%Y-%m-%d)" >> ~/gam-data/gam-data.log
       echo -e "\e[36m- Delegate access to Manager\e[0m"
-      ~/bin/gam/gam user $newEmail delegate to $managerEmail
-      echo "* $timestamp * $newEmail - Delegated email to $managerEmail" >> ~/gam-data/gam-data.log
-      echo -e "\e[36m- Deprovision $newEmail\e[0m"
-      ~/bin/gam/gam user $newEmail deprovision
-      echo "* $timestamp * $newEmail - Revoked all App Passwords, 2 Factor, and OAuth tokens" >> ~/gam-data/gam-data.log
+      ~/bin/gam/gam user $userEmail delegate to $managerEmail
+      echo "* $timestamp * $userEmail - Delegated email to $managerEmail" >> ~/gam-data/gam-data.log
+      echo -e "\e[36m- Deprovision $userEmail\e[0m"
+      ~/bin/gam/gam user $userEmail deprovision
+      echo "* $timestamp * $userEmail - Revoked all App Passwords, 2 Factor, and OAuth tokens" >> ~/gam-data/gam-data.log
       echo -e "\e[36m- Set Vacation Message\e[0m"
-      ~/bin/gam/gam user $newEmail vacation on subject "$userFirst $userLast is out of the office:" message "$userFirst $userLast is out of the office, please contact $userFirst's manager by email at <$managerEmail> or by telephone at $managerPhone. \n\n Thank You, \n IEEE Support." startdate $(date +%Y-%m-%d) enddate 2099-12-30
-      echo "* $timestamp * $newEmail - Set vacation responder to $managerEmail ($managerPhone)" >> ~/gam-data/gam-data.log
+      ~/bin/gam/gam user $userEmail vacation on subject "$userFirst $userLast is out of the office:" message "$userFirst $userLast is out of the office, please contact $userFirst's manager by email at <$managerEmail> or by telephone at $managerPhone. \n\n Thank You, \n IEEE Support." startdate $(date +%Y-%m-%d) enddate 2099-12-30
+      echo "* $timestamp * $userEmail - Set vacation responder to $managerEmail ($managerPhone)" >> ~/gam-data/gam-data.log
       echo "* $timestamp * $userEmail - On Leave Process Complete" >> ~/gam-data/gam-data.log
       echo -e "\e[0m---[ \e[93m\e[1m On Leave Process Complete for \e[36m$userFirst $userLast \e[0m]---"
       echo
