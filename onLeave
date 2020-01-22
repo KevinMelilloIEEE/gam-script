@@ -40,6 +40,7 @@ do
       echo "* $timestamp * $userEmail - Status set to OnLeave on $(date +%Y-%m-%d)" >> ~/gam-data/gam-data.log
       echo -e "\e[36m- Delegate access to Manager\e[0m"
       ~/bin/gam/gam user $userEmail delegate to $managerEmail
+      ~/bin/gam/gam user $managerEmail add calendar $userEmail selected true hidden false
       echo "* $timestamp * $userEmail - Delegated email to $managerEmail" >> ~/gam-data/gam-data.log
       echo -e "\e[36m- Deprovision $userEmail\e[0m"
       ~/bin/gam/gam user $userEmail deprovision

@@ -16,8 +16,8 @@ do
   tAlias="$userName$aliasSuffix"
   if [ -z "$1" ]
   then
-    echo -e "\e[91m\e[7mALERT:\e[0m To be used only for IEEE Staff"
-    echo -e "to process changes use \e[91m./nUser.ieee doit\e[0m"
+    echo -e "\e[91m\e[7mALERT:\e[0m To be used only for Computer.org Staff"
+    echo -e "to process changes use \e[91m./nUser.computer doit\e[0m"
     echo -e "---[ \e[93m\e[1mPREVIEW of Changes \e[0m]--- "
     echo -e "\e[1mCreate User:     \e[0m$tUser"
     echo -e "\e[1mAdd Alias:       \e[0m$tAlias"
