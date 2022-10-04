@@ -12,7 +12,7 @@ do
   tAlias=$groupName$aliasSuffix
   if [ -z "$1" ]
   then
-    echo -e "to process changes use \e[91mnGroup.ieee doit\e[0m"
+    echo -e "to process changes use \e[91mnGroup.comsoc doit\e[0m"
     echo -e "---[ \e[93m\e[1mPREVIEW of Changes \e[0m]--- "
     echo -e "\e[1mGroup Name: \e[0m$tGroupName"
     echo -e "\e[1mAlias:      \e[0m$tAlias"

@@ -12,6 +12,8 @@ do
   aliasSuffix="@gapps.ieee.org"
   tUser="$userName$emailSuffix"
   tOrg="/STAFF/$orgName"
+  secondAlias="$(echo "$userName" | sed 's/\./-/g')"
+  sAlias="$secondAlias$emailSuffix"
   tGroup="$groupName$groupSuffix"
   tAlias="$userName$aliasSuffix"
   if [ -z "$1" ]
@@ -21,6 +23,7 @@ do
     echo -e "---[ \e[93m\e[1mPREVIEW of Changes \e[0m]--- "
     echo -e "\e[1mCreate User:     \e[0m$tUser"
     echo -e "\e[1mAdd Alias:       \e[0m$tAlias"
+    echo -e "\e[1mSecond Alias:    \e[0m$sAlias"
     echo -e "\e[1mOrganization:    \e[0m$tOrg"
     echo -e "\e[1mGroup:           \e[0m$tGroup"
     echo -e "\e[36mAdd Vault License\e[0m"
@@ -33,11 +36,10 @@ do
       ~/bin/gam/gam create user $tUser firstname $firstName lastname $lastName org $tOrg
       echo "* $timestamp * $tUser - created ($tOrg)" >> ~/gam-data/gam-data.log
       ~/bin/gam/gam create alias $tAlias user $tUser
+      ~/bin/gam/gam create alias $sAlias user $tUser      
       echo "* $timestamp * $tUser - added alias of $tAlias" >> ~/gam-data/gam-data.log
       ~/bin/gam/gam update group $tGroup add member $tUser
       echo "* $timestamp * $tUser - added to group $tGroup" >> ~/gam-data/gam-data.log
-      ~/bin/gam/gam user $tUser add license VAULT
-      echo "* $timestamp * $tUser - Vault license added" >> ~/gam-data/gam-data.log
       echo -e "\e[0m---[ \e[93m\e[1m Creation Complete for \e[36m$tUser \e[0m]---"
     fi
   fi

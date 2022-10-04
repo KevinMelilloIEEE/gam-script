@@ -1,0 +1,30 @@
+#!/bin/bash
+max=3;
+INPUT=~/gam-data/purge-users.csv
+OLDIFS=$IFS
+IFS=,
+[ ! -f $INPUT ] && { 
+  echo "$INPUT file not found"; 
+  exit 99; 
+}
+[ -z "$2" ] && { 
+  echo "Please use the following format to process the purge:";
+  echo "./purgeFrom <email-address> <YYYY/MM/DD> [DOIT]"; 
+  exit 98; 
+}
+while read emailAddress
+do
+  if [ -z "$3" ]
+  then
+    echo -e "* \e[93m\e[1mPREVIEW of purge to \e[91m$emailAddress \e[0mfrom \e[91m$1 \e[0m"
+    echo -e "* to process changes add \e[91mDOIT \e[0m"
+    ~/bin/gam/gam user $emailAddress delete messages query "from:$1 AND after:$2" max_to_delete $max
+  else
+    if [ "${3^^}" == "DOIT" ]
+    then
+      echo -e "* \e[93m\e[1mPurging messages to \e[36m$emailAddress \e[0mfrom \e[91m$1 \e[0m"
+      ~/bin/gam/gam user $emailAddress delete messages query "from:$1 AND after:$2" max_to_delete $max doit
+    fi
+  fi
+done < $INPUT
+IFS=$OLDIFS

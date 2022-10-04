@@ -51,6 +51,7 @@ do
       echo "* $timestamp * $userEmail - Set vacation responder to $managerEmail ($managerPhone)" >> ~/gam-data/gam-data.log
       ~/bin/gam/gam calendar $userEmail add editor $managerEmail
       ~/bin/gam/gam user $managerEmail add calendar $userEmail selected true hidden false 
+      ~/bin/gam/gam create datatransfer $userEmail gdrive $managerEmail privacy_level shared,private
       echo -e "\e[36m- Randomize Password for $newEmail\e[0m"
       ~/bin/gam/gam update user $userEmail password random
       echo "* $timestamp * $userEmail - Password Randomized" >> ~/gam-data/gam-data.log
